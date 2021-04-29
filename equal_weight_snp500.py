@@ -7,11 +7,7 @@ import xlsxwriter
 stocks = pd.read_csv('sp_500_stocks.csv')
 
 from secrets import IEX_CLOUD_API_TOKEN
-
-def chunks(l, n):
-    # yield successive n-sized chunks from list l
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
+from utils import chunks
 
 my_columns = ['Ticker', 'Stock Price', 'Market Capitalization', 'Number of Shares to Buy']
 final_dataframe = pd.DataFrame(columns=my_columns)
