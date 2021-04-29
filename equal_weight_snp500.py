@@ -38,7 +38,7 @@ position_size = val / len(final_dataframe.index)
 for i in range(len(final_dataframe.index)):
     final_dataframe.loc[i, 'Number of Shares to Buy'] = math.floor(position_size / final_dataframe.loc[i, 'Stock Price'])
 
-writer = pd.ExcelWriter('recommended_trades.xlsx', engine='xlsxwriter')
+writer = pd.ExcelWriter('recommended_trades_equal_weight.xlsx', engine='xlsxwriter')
 final_dataframe.to_excel(writer, 'Recommended Trades', index=False)
 
 bg_color = '#a5d8dd'
