@@ -30,9 +30,14 @@ while type(val) is not float:
     except ValueError:
         print('That\'s not a number!')
 
-position_size = val / len(final_dataframe.index)
+final_dataframe.sort_values('Stock Price', inplace=True)
+final_dataframe.reset_index(inplace=True, drop=True)
+
 for i in range(len(final_dataframe.index)):
+    position_size = val / (len(final_dataframe.index) - i)
     final_dataframe.loc[i, 'Number of Shares to Buy'] = math.floor(position_size / final_dataframe.loc[i, 'Stock Price'])
+    val -= final_dataframe.loc[i, 'Number of Shares to Buy'] * final_dataframe.loc[i, 'Stock Price']
+    #print(str(final_dataframe.loc[i, 'Number of Shares to Buy']) + ' of ' + final_dataframe.loc[i, 'Ticker'] + ' at ' + str(final_dataframe.loc[i, 'Stock Price']) + ' for ' + str(final_dataframe.loc[i, 'Number of Shares to Buy'] * final_dataframe.loc[i, 'Stock Price']) + '. Remaining capital: ' + str(val))
 
 writer = pd.ExcelWriter('recommended_trades_equal_weight.xlsx', engine='xlsxwriter')
 final_dataframe.to_excel(writer, 'Recommended Trades', index=False)
