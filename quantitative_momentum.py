@@ -7,7 +7,6 @@ import xlsxwriter
 
 from scipy.stats import percentileofscore as percentile
 from secrets import IEX_CLOUD_API_TOKEN
-from statistics import mean
 from utils import chunks
 
 stocks = pd.read_csv('sp_500_stocks.csv')
@@ -36,7 +35,7 @@ for row in hqm_dataframe.index:
     momentum_percentiles = []
     for time_period in time_periods:
         momentum_percentiles.append(hqm_dataframe.loc[row, f'{time_period} Return Percentile'])
-    hqm_dataframe.loc[row, 'High Quality Momentum Score'] = mean(momentum_percentiles)
+    hqm_dataframe.loc[row, 'High Quality Momentum Score'] = .4 * momentum_percentiles[0] + .3 * momentum_percentiles[1] + .2 * momentum_percentiles[2] + .1 * momentum_percentiles[3]
 
 hqm_dataframe.sort_values('High Quality Momentum Score', ascending=False, inplace=True)
 hqm_dataframe = hqm_dataframe[:50]
@@ -50,9 +49,10 @@ while type(val) is not float:
     except ValueError:
         print('That\'s not a number!')
 
-position_size = val / len(hqm_dataframe.index)
 for i in range(len(hqm_dataframe.index)):
+    position_size = val / (len(hqm_dataframe.index) - i)
     hqm_dataframe.loc[i, 'Number of Shares to Buy'] = math.floor(position_size / hqm_dataframe.loc[i, 'Price'])
+    val -= hqm_dataframe.loc[i, 'Number of Shares to Buy'] * hqm_dataframe.loc[i, 'Price']
 
 writer = pd.ExcelWriter('recommended_trades_quantitative_momentum.xlsx', engine='xlsxwriter')
 hqm_dataframe.to_excel(writer, 'Recommended Trades', index=False)
